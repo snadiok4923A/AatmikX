@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AatmikX — Sandipan Paul</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  :root {
+    --bg: #080808;
+    --bg2: #0f0f0f;
+    --accent: #e85d04;
+    --accent2: #f48c06;
+    --white: #f0ece4;
+    --muted: #555;
+    --border: rgba(232,93,4,0.18);
+    --glass: rgba(255,255,255,0.03);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--white);
+    font-family:'Syne',sans-serif;
+    overflow-x:hidden;
+    cursor:none;
+  }
+  /* CURSOR */
+  #cursor{position:fixed;width:12px;height:12px;background:var(--accent);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .1s;mix-blend-mode:difference;}
+  #cursor-ring{position:fixed;width:40px;height:40px;border:1px solid var(--accent);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all .25s ease;opacity:.6;}
+  body:hover #cursor{transform:translate(-50%,-50%) scale(1);}
+
+  /* NOISE OVERLAY */
+  body::before{
+    content:'';position:fixed;inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity:.4;pointer-events:none;z-index:1000;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar{width:3px;}
+  ::-webkit-scrollbar-track{background:var(--bg);}
+  ::-webkit-scrollbar-thumb{background:var(--accent);}
+
+  /* NAV */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:500;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px 60px;
+    border-bottom:1px solid transparent;
+    transition:all .4s;
+  }
+  nav.scrolled{
+    background:rgba(8,8,8,.92);
+    backdrop-filter:blur(20px);
+    border-bottom-color:var(--border);
+  }
+  .nav-logo{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:28px;letter-spacing:4px;
+    color:var(--white);
+    text-decoration:none;
+  }
+  .nav-logo span{color:var(--accent);}
+  .nav-links{display:flex;gap:36px;list-style:none;}
+  .nav-links a{
+    font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;
+    color:var(--muted);text-decoration:none;text-transform:uppercase;
+    transition:color .3s;position:relative;
+  }
+  .nav-links a::after{
+    content:'';position:absolute;bottom:-3px;left:0;width:0;height:1px;
+    background:var(--accent);transition:width .3s;
+  }
+  .nav-links a:hover{color:var(--white);}
+  .nav-links a:hover::after{width:100%;}
+  .nav-cta{
+    font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;
+    text-transform:uppercase;color:var(--accent);text-decoration:none;
+    border:1px solid var(--accent);padding:10px 24px;
+    transition:all .3s;
+  }
+  .nav-cta:hover{background:var(--accent);color:#000;}
+
+  /* HERO */
+  #hero{
+    min-height:100vh;display:flex;flex-direction:column;
+    justify-content:center;padding:0 60px;
+    position:relative;overflow:hidden;
+  }
+  .hero-grid{
+    position:absolute;inset:0;
+    background-image:
+      linear-gradient(rgba(232,93,4,.04) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(232,93,4,.04) 1px,transparent 1px);
+    background-size:80px 80px;
+    animation:gridDrift 20s linear infinite;
+  }
+  @keyframes gridDrift{0%{transform:translateY(0);}100%{transform:translateY(80px);}}
+
+  .hero-tag{
+    font-family:'DM Mono',monospace;font-size:11px;letter-spacing:3px;
+    color:var(--accent);text-transform:uppercase;margin-bottom:24px;
+    display:flex;align-items:center;gap:12px;
+    opacity:0;animation:fadeUp .8s .3s forwards;
+  }
+  .hero-tag::before{content:'';width:40px;height:1px;background:var(--accent);}
+
+  .hero-name{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:clamp(80px,14vw,200px);
+    line-height:.9;letter-spacing:-2px;
+    opacity:0;animation:fadeUp .9s .5s forwards;
+  }
+  .hero-name .accent{color:var(--accent);}
+
+  .hero-sub{
+    font-size:clamp(16px,2vw,22px);font-weight:400;
+    color:rgba(240,236,228,.5);margin-top:28px;max-width:520px;
+    opacity:0;animation:fadeUp .8s .7s forwards;
+  }
+
+  .hero-roles{
+    display:flex;gap:16px;margin-top:40px;flex-wrap:wrap;
+    opacity:0;animation:fadeUp .8s .9s forwards;
+  }
+  .role-pill{
+    font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;
+    text-transform:uppercase;padding:8px 20px;border:1px solid var(--border);
+    color:var(--muted);position:relative;overflow:hidden;transition:all .4s;
+  }
+  .role-pill::before{
+    content:'';position:absolute;inset:0;background:var(--accent);
+    transform:translateX(-100%);transition:transform .4s;z-index:-1;
+  }
+  .role-pill:hover{color:#000;border-color:var(--accent);}
+  .role-pill:hover::before{transform:translateX(0);}
+
+  .hero-scroll{
+    position:absolute;bottom:40px;left:60px;
+    font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;
+    color:var(--muted);display:flex;align-items:center;gap:12px;
+    text-transform:uppercase;
+    opacity:0;animation:fadeUp .8s 1.2s forwards;
+  }
+  .hero-scroll-line{
+    width:1px;height:60px;background:linear-gradient(to bottom,var(--accent),transparent);
+    animation:scrollPulse 2s infinite;
+  }
+  @keyframes scrollPulse{0%,100%{opacity:.4;}50%{opacity:1;}}
+
+  .hero-deco{
+    position:absolute;right:-100px;top:50%;transform:translateY(-50%);
+    font-family:'Bebas Neue',sans-serif;font-size:320px;
+    color:rgba(232,93,4,.04);letter-spacing:-10px;line-height:1;
+    pointer-events:none;user-select:none;white-space:nowrap;
+  }
+
+  /* VIDEO BACKGROUND */
+  #hero-video{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    z-index:-2;
+    opacity: 100.75;   
+    
+  }
+  #hero::after{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,0.35);
+    z-index:-1;
+  }
+
+  /* SECTION BASE */
+  section{padding:120px 60px;position:relative;}
+  .sec-label{
+    font-family:'DM Mono',monospace;font-size:10px;letter-spacing:4px;
+    color:var(--accent);text-transform:uppercase;margin-bottom:16px;
+    display:flex;align-items:center;gap:12px;
+  }
+  .sec-label::before{content:'[';} .sec-label::after{content:']';}
+  .sec-title{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:clamp(48px,6vw,90px);line-height:1;
+    margin-bottom:60px;
+  }
+  .sec-title .accent{color:var(--accent);}
+
+  /* ABOUT */
+  #about{background:var(--bg2);}
+  .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+  .about-text{
+    font-size:18px;line-height:1.8;color:rgba(240,236,228,.7);
+    margin-bottom:32px;
+  }
+
+  .about-stats{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:48px;}
+  .stat-box{
+    border:1px solid var(--border);padding:28px 24px;
+    background:var(--glass);position:relative;overflow:hidden;
+    transition:border-color .3s;
+  }
+  .stat-box::before{
+    content:'';position:absolute;top:0;left:0;width:3px;height:100%;
+    background:var(--accent);transform:scaleY(0);transition:transform .4s;
+    transform-origin:bottom;
+  }
+  .stat-box:hover{border-color:var(--accent);}
+  .stat-box:hover::before{transform:scaleY(1);}
+  .stat-num{
+    font-family:'Bebas Neue',sans-serif;font-size:52px;
+    color:var(--accent);line-height:1;
+  }
+  .stat-label{
+    font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;
+    color:var(--muted);text-transform:uppercase;margin-top:6px;
+  }
+  .about-right{position:relative;}
+  .about-img-box{
+    width:100%;aspect-ratio:3/4;
+    background:linear-gradient(135deg,#1a0a00,#2d1500);
+    border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Bebas Neue',sans-serif;font-size:120px;
+    color:rgba(232,93,4,.15);letter-spacing:-4px;
+    position:relative;overflow:hidden;
+  }
+  .video-slider {
+  position: relative;
+  overflow: hidden;
+}
+
+/* all videos same position */
+.slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+
+  opacity: 0;
+  transition: opacity 0.0s ease;
+}
+
+/* active video */
+.slide.active {
+  opacity: 1;
+}
+  .about-img-box::after{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(to top,var(--bg2) 0%,transparent 10%);
+  }
+  .about-corner{
+    position:absolute;width:40px;height:40px;
+    border-color:var(--accent);border-style:solid;border-width:0;
+  }
+  .about-corner.tl{top:-1px;left:-1px;border-top-width:2px;border-left-width:2px;}
+  .about-corner.br{bottom:-1px;right:-1px;border-bottom-width:2px;border-right-width:2px;}
+
+  /* SKILLS */
+  .skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;}
+  .skill-card{
+    background:var(--bg2);padding:48px 40px;
+    border:1px solid var(--border);
+    position:relative;overflow:hidden;transition:all .4s;
+    cursor:default;
+  }
+  .skill-card::before{
+    content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+    background:var(--accent);transform:scaleX(0);transition:transform .4s;
+  }
+  .skill-card:hover{background:rgba(232,93,4,.05);transform:translateY(-4px);}
+  .skill-card:hover::before{transform:scaleX(1);}
+  .skill-icon{
+    font-size:40px;margin-bottom:24px;
+    filter:drop-shadow(0 0 20px rgba(232,93,4,.3));
+  }
+  .skill-name{
+    font-family:'Bebas Neue',sans-serif;font-size:32px;
+    margin-bottom:12px;letter-spacing:1px;
+  }
+  .skill-desc{
+    font-family:'DM Mono',monospace;font-size:12px;line-height:1.7;
+    color:var(--muted);
+  }
+  .skill-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;}
+  .skill-tag{
+    font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;
+    text-transform:uppercase;padding:4px 10px;
+    border:1px solid rgba(232,93,4,.2);color:rgba(232,93,4,.7);
+  }
+  .skill-num{
+    position:absolute;top:24px;right:32px;
+    font-family:'Bebas Neue',sans-serif;font-size:80px;
+    color:rgba(255,255,255,.03);line-height:1;
+  }
+
+  /* PROJECTS */
+  #projects{background:var(--bg2);}
+  .projects-list{display:flex;flex-direction:column;gap:2px;}
+  .project-item{
+    display:grid;grid-template-columns:80px 1fr auto;
+    align-items:center;gap:40px;
+    padding:36px 40px;
+    border:1px solid var(--border);
+    background:var(--glass);
+    position:relative;overflow:hidden;
+    transition:all .4s;
+    text-decoration:none;color:inherit;
+  }
+  .project-item::before{
+    content:'';position:absolute;left:0;top:0;bottom:0;width:0;
+    background:rgba(232,93,4,.06);transition:width .4s;
+  }
+  .project-item:hover{border-color:var(--accent);}
+  .project-item:hover::before{width:100%;}
+  .project-num{
+    font-family:'Bebas Neue',sans-serif;font-size:42px;
+    color:rgba(232,93,4,.3);
+  }
+  .project-name{
+    font-family:'Bebas Neue',sans-serif;font-size:32px;
+    letter-spacing:1px;transition:color .3s;
+  }
+  .project-item:hover .project-name{color:var(--accent);}
+  .project-meta{
+    font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;
+    color:var(--muted);text-transform:uppercase;margin-top:6px;
+  }
+  .project-arrow{
+    font-size:28px;color:var(--accent);opacity:0;
+    transform:translateX(-10px);transition:all .4s;
+  }
+  .project-item:hover .project-arrow{opacity:1;transform:translateX(0);}
+  .project-info{display:flex;flex-direction:column;justify-content:center;}
+
+  /* GAMING IDs */
+  #gaming{
+    background:linear-gradient(180deg,var(--bg) 0%,#0d0500 100%);
+  }
+  .gaming-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;}
+  .game-card{
+    padding:40px;border:1px solid var(--border);
+    background:linear-gradient(135deg,rgba(232,93,4,.05),transparent);
+    position:relative;overflow:hidden;transition:all .4s;
+  }
+  .game-card::after{
+    content:'';position:absolute;top:-50%;right:-50%;
+    width:200px;height:200px;
+    background:radial-gradient(circle,rgba(232,93,4,.1),transparent 70%);
+    transition:all .4s;opacity:0;
+  }
+  .game-card:hover{border-color:var(--accent);}
+  .game-card:hover::after{opacity:1;}
+  .game-emoji{font-size:48px;margin-bottom:20px;display:block;}
+  .game-name{
+    font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;
+    color:var(--accent);margin-bottom:8px;
+  }
+  .game-id{
+    font-family:'DM Mono',monospace;font-size:14px;
+    color:var(--white);letter-spacing:3px;margin-bottom:4px;
+  }
+  .game-id-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.copy-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.copy-btn:hover {
+  background: var(--accent);
+  color: #000;
+  box-shadow: 0 0 10px rgba(232,93,4,0.4);
+}
+  .game-label{
+    font-family:'DM Mono',monospace;font-size:10px;
+    color:var(--muted);letter-spacing:2px;text-transform:uppercase;
+  }
+
+  /* CONNECT */
+  #connect{
+    text-align:center;
+    background:var(--bg2);
+    padding:140px 60px;
+  }
+  .connect-big{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:clamp(60px,10vw,160px);
+    line-height:.9;letter-spacing:-3px;
+    margin-bottom:48px;
+  }
+  .connect-big span{
+    display:block;
+    -webkit-text-stroke:1px rgba(240,236,228,.2);
+    color:transparent;
+  }
+  .connect-big .fill{color:var(--white);-webkit-text-stroke:0;}
+  .social-row{
+    display:flex;justify-content:center;gap:16px;flex-wrap:wrap;
+    margin-bottom:60px;
+  }
+  .social-btn{
+    display:flex;align-items:center;gap:10px;
+    font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;
+    text-transform:uppercase;padding:14px 28px;
+    border:1px solid var(--border);color:var(--muted);
+    text-decoration:none;transition:all .4s;position:relative;overflow:hidden;
+  }
+  .social-btn::before{
+    content:'';position:absolute;inset:0;background:var(--accent);
+    transform:translateY(100%);transition:transform .3s;z-index:-1;
+  }
+  .social-btn:hover{color:#000;border-color:var(--accent);}
+  .social-btn:hover::before{transform:translateY(0);}
+  .social-btn:hover .social-icon {
+  color: #000;
+  transform: scale(1.2);
+}
+  .social-icon {
+  font-size: 18px;
+  color: var(--accent);
+  transition: all 0.3s ease;
+  }
+
+
+  .email-link{
+    display:inline-block;
+    font-family:'Bebas Neue',sans-serif;font-size:clamp(20px,3vw,40px);
+    letter-spacing:3px;color:var(--accent);text-decoration:none;
+    border-bottom:1px solid rgba(232,93,4,.3);padding-bottom:4px;
+    transition:all .3s;
+  }
+  .email-link:hover{border-bottom-color:var(--accent);}
+
+  /* FOOTER */
+  footer{
+    padding:40px 60px;
+    display:flex;align-items:center;justify-content:space-between;
+    border-top:1px solid var(--border);
+  }
+  .footer-logo{
+    font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:4px;
+  }
+  .footer-logo span{color:var(--accent);}
+  .footer-copy{
+    font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;
+    color:var(--muted);text-transform:uppercase;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(40px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+  .reveal{
+    opacity:0;transform:translateY(50px);
+    transition:opacity .8s ease,transform .8s ease;
+  }
+  .reveal.visible{opacity:1;transform:translateY(0);}
+  .reveal-left{
+    opacity:0;transform:translateX(-50px);
+    transition:opacity .8s ease,transform .8s ease;
+  }
+  .reveal-left.visible{opacity:1;transform:translateX(0);}
+  .reveal-right{
+    opacity:0;transform:translateX(50px);
+    transition:opacity .8s ease,transform .8s ease;
+  }
+  .reveal-right.visible{opacity:1;transform:translateX(0);}
+
+  /* DIVIDER */
+  .divider{
+    height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);
+    margin:0;opacity:.3;
+  }
+
+  /* MARQUEE */
+  .marquee-wrap{
+    overflow:hidden;border-top:1px solid var(--border);
+    border-bottom:1px solid var(--border);
+    padding:20px 0;background:var(--bg2);
+  }
+  .marquee-track{
+    display:flex;gap:60px;width:max-content;
+    animation:marquee 20s linear infinite;
+  }
+  .marquee-track:hover{animation-play-state:paused;}
+  @keyframes marquee{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+  .marquee-item{
+    font-family:'Bebas Neue',sans-serif;font-size:18px;
+    letter-spacing:4px;color:var(--muted);white-space:nowrap;
+    display:flex;align-items:center;gap:60px;
+  }
+  .marquee-dot{width:6px;height:6px;background:var(--accent);border-radius:50%;}
+
+  /* PROGRESS BARS */
+  .skill-bars{margin-top:40px;}
+  .bar-item{margin-bottom:20px;}
+  .bar-top{display:flex;justify-content:space-between;margin-bottom:8px;}
+  .bar-name{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+  .bar-pct{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);}
+  .bar-track{height:2px;background:rgba(255, 0, 0, 0.06);position:relative;}
+  .bar-fill {
+  height: 100%;
+  width: 0;
+  position: relative;
+  border-radius: 2px;
+
+  background: linear-gradient(
+    90deg,
+    #e85d04,
+    #f48c06,
+    #ffba08,
+    #f46506,
+    #e83204
+  );
+
+  background-size: 200% 100%;
+  animation: gradientMove 3s linear infinite;
+
+  box-shadow:
+    0 0 8px rgba(232,93,4,0.6),
+    0 0 20px rgba(232,93,4,0.4);
+}
+
+/* .bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 50%;
+  height: 100%;
+
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,0.4),
+    transparent
+  );
+
+  animation: shine 2.5s infinite;
+} */
+
+@keyframes shine {
+  0% { left: -0%; }
+  100% { left: 50%; }
+}
+
+/* moving gradient */
+@keyframes gradientMove {
+  0% { background-position: 0% }
+  100% { background-position: 200% }
+}
+
+  /* RESPONSIVE */
+  @media(max-width:900px){
+    nav{padding:20px 24px;}
+    .nav-links{display:none;}
+    section{padding:80px 24px;}
+    #hero{padding:0 24px;}
+    .hero-scroll{left:24px;}
+    .about-grid{grid-template-columns:1fr;}
+    .about-right{display:none;}
+    .skills-grid{grid-template-columns:1fr;}
+    .gaming-grid{grid-template-columns:1fr;}
+    .footer{padding:32px 24px;}
+    .social-row{gap:10px;}
+  }
+</style>
+<script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+
+<!-- Cursor -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">Aatmik<span>X</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#gaming">Gaming</a></li>
+    <li><a href="#connect">Connect</a></li>
+  </ul>
+  <a href="mailto:sandipanpaul489@gmail.com" class="nav-cta">Hire Me</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <video autoplay muted loop playsinline id="hero-video">
+    <source src="videos/bg.mp4" type="video/mp4">
+  </video>
+  <div class="hero-grid"></div>
+  <div class="hero-deco">SP</div>
+  <div class="hero-tag">Portfolio 2026</div>
+  <h1 class="hero-name">SANDIPAN<br/><span class="accent">PAUL</span></h1>
+  <p class="hero-sub">UI/UX Designer · Game Developer · Creator<br/>B.Tech IT · 3rd Year · CEMK</p>
+  <div class="hero-roles">
+    <div class="role-pill">UI/UX Design</div>
+    <div class="role-pill">Game Dev</div>
+    <div class="role-pill">Music</div>
+    <div class="role-pill">Content Creator</div>
+  </div>
+  <div class="hero-scroll">
+    <div class="hero-scroll-line"></div>
+    Scroll Down
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track" id="marquee">
+    <div class="marquee-item">UI/UX DESIGNER <span class="marquee-dot"></span></div>
+    <div class="marquee-item">GAME DEVELOPER <span class="marquee-dot"></span></div>
+    <div class="marquee-item">AATMIKX <span class="marquee-dot"></span></div>
+    <div class="marquee-item">AAX MUSIC <span class="marquee-dot"></span></div>
+    <div class="marquee-item">AAX GAMING <span class="marquee-dot"></span></div>
+    <div class="marquee-item">SANDIPAN PAUL <span class="marquee-dot"></span></div>
+    <div class="marquee-item">UI/UX DESIGNER <span class="marquee-dot"></span></div>
+    <div class="marquee-item">GAME DEVELOPER <span class="marquee-dot"></span></div>
+    <div class="marquee-item">AATMIKX <span class="marquee-dot"></span></div>
+    <div class="marquee-item">AAX MUSIC <span class="marquee-dot"></span></div>
+    <div class="marquee-item">AAX GAMING <span class="marquee-dot"></span></div>
+    <div class="marquee-item">SANDIPAN PAUL <span class="marquee-dot"></span></div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="sec-label">About Me</div>
+  <div class="about-grid">
+    <div class="about-left">
+      <h2 class="sec-title reveal">WHO AM<br/><span class="accent">I ?</span></h2>
+      <p class="about-text reveal">I'm Sandipan Paul — a passionate UI/UX Designer and Game Developer currently pursuing B.Tech in Information Technology (3rd Year) at College of Engineering and Management Kolaghat.</p>
+      <p class="about-text reveal">I craft digital experiences that merge aesthetics with function — from sleek interfaces to immersive game worlds. I also create music and content under the <strong style="color:var(--accent)">AatmikX</strong> brand.</p>
+
+      <div class="skill-bars reveal" id="skillBars">
+        <div class="bar-item">
+          <div class="bar-top"><span class="bar-name">UI/UX Design</span><span class="bar-pct">80%</span></div>
+          <div class="bar-track"><div class="bar-fill" data-w="80"></div></div>
+        </div>
+        <div class="bar-item">
+          <div class="bar-top"><span class="bar-name">Game Development</span><span class="bar-pct">85%</span></div>
+          <div class="bar-track"><div class="bar-fill" data-w="85"></div></div>
+        </div>
+        <div class="bar-item">
+          <div class="bar-top"><span class="bar-name">Frontend Dev</span><span class="bar-pct">75%</span></div>
+          <div class="bar-track"><div class="bar-fill" data-w="75"></div></div>
+        </div>
+        <div class="bar-item">
+          <div class="bar-top"><span class="bar-name">Music Production</span><span class="bar-pct">70%</span></div>
+          <div class="bar-track"><div class="bar-fill" data-w="70"></div></div>
+        </div>
+      </div>
+
+      <div class="about-stats reveal">
+        <div class="stat-box">
+          <div class="stat-num">3rd</div>
+          <div class="stat-label">Year B.Tech IT</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">2+</div>
+          <div class="stat-label">YT Channels</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">∞</div>
+          <div class="stat-label">Creative Projects</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">1</div>
+          <div class="stat-label">Music Platform</div>
+        </div>
+      </div>
+    </div>
+    <div class="about-right reveal-right">
+     <div class="about-img-box video-slider">
+
+  <video class="slide active" muted playsinline>
+    <source src="videos/1.mp4" type="video/mp4">
+  </video>
+
+  <video class="slide" muted playsinline>
+    <source src="videos/2.mp4" type="video/mp4">
+  </video>
+
+  <video class="slide" muted playsinline>
+    <source src="videos/3.mp4" type="video/mp4">
+  </video>
+
+  <div class="about-overlay"></div>
+
+  <div class="about-corner tl"></div>
+  <div class="about-corner br"></div>
+
+</div>
+
+  <div class="about-overlay"></div>
+
+  <div class="about-corner tl"></div>
+  <div class="about-corner br"></div>
+
+</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="sec-label">What I Do</div>
+  <h2 class="sec-title reveal">CORE<br/><span class="accent">SKILLS</span></h2>
+  <div class="skills-grid">
+    <div class="skill-card reveal">
+      <div class="skill-icon">
+        <img src="images/icons/ui-ux.png" alt="Skill Icon">
+      </div>
+      <div class="skill-num">01</div>
+      <div class="skill-name">UI/UX Design</div>
+      <p class="skill-desc">Crafting immersive, user-centred interfaces that balance beauty and usability. From wireframes to final pixel-perfect designs.</p>
+      <div class="skill-tags">
+        <span class="skill-tag">Figma</span>
+        <span class="skill-tag">Prototyping</span>
+        <span class="skill-tag">Design Systems</span>
+      </div>
+    </div>
+    <div class="skill-card reveal" style="transition-delay:.1s">
+      <div class="skill-icon">
+        <img src="images/icons/game-controller.png" alt="Skill Icon">
+      </div>
+      <div class="skill-num">02</div>
+      <div class="skill-name">Game Dev</div>
+      <p class="skill-desc">Building interactive worlds and game mechanics. Turning concepts into playable, engaging experiences.</p>
+      <div class="skill-tags">
+        <span class="skill-tag">Unity</span>
+        <span class="skill-tag">C#</span>
+        <span class="skill-tag">Game Design</span>
+      </div>
+    </div>
+    <div class="skill-card reveal" style="transition-delay:.2s">
+      <div class="skill-icon">
+        <img src="images/icons/code.png" alt="Skill Icon">
+      </div>
+      <div class="skill-num">03</div>
+      <div class="skill-name">Web Dev</div>
+      <p class="skill-desc">Building responsive, performant web experiences. Clean code, modern aesthetics, smooth interactions.</p>
+      <div class="skill-tags">
+        <span class="skill-tag">HTML/CSS</span>
+        <span class="skill-tag">JavaScript</span>
+        <span class="skill-tag">React</span>
+      </div>
+    </div>
+    <div class="skill-card reveal" style="transition-delay:.3s">
+      <div class="skill-icon">
+        <img src="images/icons/music-player.png" alt="Skill Icon">
+      </div>
+      <div class="skill-num">04</div>
+      <div class="skill-name">Music</div>
+      <p class="skill-desc">Producing original music under AAX Music. A creative outlet that blends emotion with digital sound design.</p>
+      <div class="skill-tags">
+        <span class="skill-tag">AAX Music</span>
+        <span class="skill-tag">Production</span>
+        <span class="skill-tag">YouTube</span>
+      </div>
+    </div>
+    <div class="skill-card reveal" style="transition-delay:.4s">
+      <div class="skill-icon">
+        <img src="images/icons/youtube.png" alt="Skill Icon">
+      </div>
+      <div class="skill-num">05</div>
+      <div class="skill-name">Content Creation</div>
+      <p class="skill-desc">Creating engaging gaming and music content across YouTube channels with a growing audience.</p>
+      <div class="skill-tags">
+        <span class="skill-tag">AAX Gaming</span>
+        <span class="skill-tag">Video Edit</span>
+        <span class="skill-tag">YouTube</span>
+      </div>
+    </div>
+    <div class="skill-card reveal" style="transition-delay:.5s">
+      <div class="skill-icon">
+        <img src="images/icons/engineer.png" alt="Skill Icon">
+      </div>
+      <div class="skill-num">06</div>
+      <div class="skill-name">IT Engineering</div>
+      <p class="skill-desc">Strong technical foundation in Information Technology — algorithms, systems, and software engineering principles.</p>
+      <div class="skill-tags">
+        <span class="skill-tag">B.Tech IT</span>
+        <span class="skill-tag">CEMK</span>
+        <span class="skill-tag">Systems</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="sec-label">My Work</div>
+  <h2 class="sec-title reveal">FEATURED<br/><span class="accent">PROJECTS & WORK</span></h2>
+  <div class="projects-list">
+    <a href="https://snadiok4923a.github.io/AAX-Music/" target="_blank" class="project-item reveal">
+      <div class="project-num">01</div>
+      <div class="project-info">
+        <div class="project-name">AAX Music Platform</div>
+        <div class="project-meta">Web App · Music · Personal Project</div>
+      </div>
+      <div class="project-arrow">→</div>
+    </a>
+    <a href="https://www.youtube.com/@Ax81347" target="_blank" class="project-item reveal" style="transition-delay:.1s">
+      <div class="project-num">02</div>
+      <div class="project-info">
+        <div class="project-name">AAX Gaming — YouTube</div>
+        <div class="project-meta">YouTube · Gaming · Content Creation</div>
+      </div>
+      <div class="project-arrow">→</div>
+    </a>
+    <a href="https://www.youtube.com/channel/UCf3_OVOXiCznshjLf06-ygQ" target="_blank" class="project-item reveal" style="transition-delay:.2s">
+      <div class="project-num">03</div>
+      <div class="project-info">
+        <div class="project-name">AAX Music — YouTube</div>
+        <div class="project-meta">YouTube · Music · Original Tracks</div>
+      </div>
+      <div class="project-arrow">→</div>
+    </a>
+    
+  </div>
+</section>
+
+<!-- GAMING IDs -->
+<section id="gaming">
+  <div class="sec-label">Gaming</div>
+  <h2 class="sec-title reveal">GAME<br/><span class="accent">IDs</span></h2>
+  <div class="gaming-grid">
+    <div class="game-card reveal">
+      <span class="game-emoji">
+        <img src="images/icons/Efootball2.png" alt="Skill Icon">
+      </span>
+      <div class="game-name">eFootball</div>
+      <div class="game-id-wrap">
+        <span class="game-id">ASAA-781-940-033</span>
+        <button class="copy-btn" data-copy="ASAA-781-940-033">Copy</button>
+      </div>
+      <div class="game-label">Pro Clubs ID</div>
+    </div>
+    <div class="game-card reveal" style="transition-delay:.1s">
+      <span class="game-emoji">
+        <img src="images/icons/FF_SHORT_LOGO.PNG1.png" alt="Skill Icon">
+      </span>
+      <div class="game-name">Free Fire</div>
+      <div class="game-id-wrap">
+        <span class="game-id">1981196538</span>
+        <button class="copy-btn" data-copy="1981196538">Copy</button>
+      </div>
+      <div class="game-label">Player ID</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONNECT -->
+<section id="connect">
+  <div class="sec-label">Get In Touch</div>
+  <div class="connect-big reveal">
+    <span>LET'S</span>
+    <span class="fill">BUILD</span>
+    <span>TOGETHER</span>
+  </div>
+  <div class="social-row reveal">
+
+<a href="#" class="social-btn">
+  <i class="fab fa-linkedin social-icon"></i>LinkedIn
+</a>
+
+<a href="#" class="social-btn">
+  <i class="fab fa-github social-icon"></i>GitHub
+</a>
+
+<a href="#" class="social-btn">
+  <i class="fab fa-instagram social-icon"></i>Instagram
+</a>
+  </div>
+  <a href="mailto:sandipanpaul489@gmail.com" class="email-link reveal">
+    sandipanpaul489@gmail.com
+  </a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Aatmik<span>X</span></div>
+  <div class="footer-copy">© 2026 Sandipan Paul · All Rights Reserved</div>
+  <div class="footer-copy">CEMK · B.Tech IT</div>
+</footer>
+
+<script>
+  // CURSOR
+  const cursor=document.getElementById('cursor');
+  const ring=document.getElementById('cursor-ring');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{
+    mx=e.clientX;my=e.clientY;
+    cursor.style.left=mx+'px';cursor.style.top=my+'px';
+  });
+  function animRing(){
+    rx+=(mx-rx)*.12;ry+=(my-ry)*.12;
+    ring.style.left=rx+'px';ring.style.top=ry+'px';
+    requestAnimationFrame(animRing);
+  }animRing();
+  document.querySelectorAll('a,button,.skill-card,.game-card,.stat-box').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{
+      cursor.style.transform='translate(-50%,-50%) scale(2.5)';
+      ring.style.transform='translate(-50%,-50%) scale(1.5)';
+      ring.style.opacity='1';
+    });
+    el.addEventListener('mouseleave',()=>{
+      cursor.style.transform='translate(-50%,-50%) scale(1)';
+      ring.style.transform='translate(-50%,-50%) scale(1)';
+      ring.style.opacity='.6';
+    });
+  });
+
+  // NAVBAR
+  window.addEventListener('scroll',()=>{
+    document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>50);
+  });
+
+  // REVEAL ON SCROLL
+  const revealEls=document.querySelectorAll('.reveal,.reveal-left,.reveal-right');
+  const io=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('visible');
+        // Trigger skill bars
+        if(e.target.id==='skillBars'||e.target.closest('#skillBars')){
+          animateBars();
+        }
+      }
+    });
+  },{threshold:.15});
+  revealEls.forEach(el=>io.observe(el));
+
+  // SKILL BARS
+  let barsAnimated=false;
+  function animateBars(){
+    if(barsAnimated)return;barsAnimated=true;
+    document.querySelectorAll('.bar-fill').forEach(bar=>{
+      bar.style.width=bar.dataset.w+'%';
+    });
+  }
+  // Also trigger when skillBars parent is visible
+  const barsSection=document.getElementById('skillBars');
+  if(barsSection){
+    const barObs=new IntersectionObserver(entries=>{
+      if(entries[0].isIntersecting)animateBars();
+    },{threshold:.3});
+    barObs.observe(barsSection);
+  }
+
+  // PARALLAX HERO GRID
+  window.addEventListener('scroll',()=>{
+    const y=window.scrollY;
+    const grid=document.querySelector('.hero-grid');
+    if(grid)grid.style.transform=`translateY(${y*.4}px)`;
+    const deco=document.querySelector('.hero-deco');
+    if(deco)deco.style.transform=`translateY(calc(-50% + ${y*.2}px))`;
+  });
+  document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const text = btn.getAttribute('data-copy');
+
+    navigator.clipboard.writeText(text);
+
+    btn.textContent = "Copied!";
+    
+    setTimeout(() => {
+      btn.textContent = "Copy";
+    }, 1500);
+  });
+});
+const slides = document.querySelectorAll('.slide');
+let index = 0;
+
+function playNextVideo() {
+  slides[index].classList.remove('active');
+
+  index = (index + 1) % slides.length;
+
+  slides[index].classList.add('active');
+  slides[index].play();
+}
+
+// play first video
+slides[0].play();
+
+// when video ends → next video
+slides.forEach(video => {
+  video.addEventListener('ended', playNextVideo);
+});
+</script>
+<script>
+  lucide.createIcons();
+</script>
+</body>
+</html>
